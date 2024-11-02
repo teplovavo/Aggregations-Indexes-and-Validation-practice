@@ -189,3 +189,70 @@ async function createIndexes() {
 
 // Call the createIndexes function after connecting to MongoDB
 connectDB().then(createIndexes);
+
+//indexes created, single and combined
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function to add validation rules to the grades collection
+async function addValidation() {
+    try {
+        const db = client.db('sample_training'); // Reference to your database
+
+        // Use the 'collMod' command to add validation to the 'grades' collection
+        await db.command({
+            collMod: 'grades',
+            validator: {
+                $jsonSchema: {
+                    bsonType: 'object',
+                    required: ['class_id', 'learner_id'],
+                    properties: {
+                        class_id: {
+                            bsonType: 'int',
+                            minimum: 0,
+                            maximum: 300,
+                            description: 'class_id must be an integer between 0 and 300 inclusive'
+                        },
+                        learner_id: {
+                            bsonType: 'int',
+                            minimum: 0,
+                            description: 'learner_id must be an integer greater than or equal to 0'
+                        }
+                    }
+                }
+            },
+            validationAction: 'warn' // Set validation action to "warn"
+        });
+
+        console.log('Validation rules added to grades collection');
+    } catch (error) {
+        console.error('Error adding validation:', error);
+    }
+}
+
+// Call the addValidation function after creating indexes
+createIndexes().then(addValidation);
+
+// // result: {
+//   $jsonSchema: {
+//     bsonType: 'object',
+//     required: [
+//       'class_id',
+//       'learner_id'
+//     ],
+//     properties: {
+//       class_id: {
+//         bsonType: 'int',
+//         minimum: 0,
+//         maximum: 300,
+//         description: 'class_id must be an integer between 0 and 300 inclusive'
+//       },
+//       learner_id: {
+//         bsonType: 'int',
+//         minimum: 0,
+//         description: 'learner_id must be an integer greater than or equal to 0'
+//       }
+//     }
+//   }
+// }
+
