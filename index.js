@@ -103,12 +103,13 @@ app.get('/grades/debug', async (req, res) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Step 2: Adding a new route to get stats for a specific class
+// Step 2: Adding a new route to get stats for a specific class with more logging for debugging
 
 // Adding GET route at '/grades/stats/:id'
 app.get('/grades/stats/:id', async (req, res) => {
     try {
         const classId = parseInt(req.params.id); // Get class_id from the URL and convert it to a number
+
         const db = client.db('sample_training'); // Reference to your database
         const gradesCollection = db.collection('grades'); // Reference to the 'grades' collection
 
@@ -145,6 +146,20 @@ app.get('/grades/stats/:id', async (req, res) => {
         res.json(classStats);
     } catch (error) {
         // Handle any errors that may occur
+        console.error('Error occurred:', error);
         res.status(500).json({ error: 'An error occurred while fetching class stats.' });
     }
 });
+//    [{"avgAbove50":48,"totalLearners":102,"percentageAbove50":47.05882352941176}]
+
+//test result
+//Class stats: [
+    // {
+    //     avgAbove50: 48,
+    //     totalLearners: 102,
+    //     percentageAbove50: 47.05882352941176
+    //   }
+    // ]
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
