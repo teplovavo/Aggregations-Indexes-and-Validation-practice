@@ -163,3 +163,29 @@ app.get('/grades/stats/:id', async (req, res) => {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// Function to create necessary indexes in the grades collection
+async function createIndexes() {
+    try {
+        const db = client.db('sample_training'); // Reference to the database
+        const gradesCollection = db.collection('grades'); // Reference to the 'grades' collection
+
+        // Create a single-field index on class_id
+        await gradesCollection.createIndex({ class_id: 1 });
+        console.log('Index created on class_id');
+
+        // Create a single-field index on learner_id
+        await gradesCollection.createIndex({ learner_id: 1 });
+        console.log('Index created on learner_id');
+
+        // Create a compound index on learner_id and class_id, both ascending
+        await gradesCollection.createIndex({ learner_id: 1, class_id: 1 });
+        console.log('Compound index created on learner_id and class_id');
+    } catch (error) {
+        console.error('Error creating indexes:', error);
+    }
+}
+
+// Call the createIndexes function after connecting to MongoDB
+connectDB().then(createIndexes);
