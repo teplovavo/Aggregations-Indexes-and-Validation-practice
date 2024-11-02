@@ -256,3 +256,29 @@ createIndexes().then(addValidation);
 //   }
 // }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Adding a temporary route to test validation
+app.post('/grades/test-validation', async (req, res) => {
+    try {
+        const db = client.db('sample_training');
+        const gradesCollection = db.collection('grades');
+
+        // Example document that violates validation rules (class_id is out of range)
+        const invalidDocument = {
+            class_id: 500, // Invalid value: should be between 0 and 300
+            learner_id: -1, // Invalid value: should be >= 0
+            scores: [
+                { type: 'exam', score: 85 },
+                { type: 'quiz', score: 92 }
+            ]
+        };
+
+        // Insert the invalid document
+        await gradesCollection.insertOne(invalidDocument);
+        res.send('Document inserted (check for warnings in MongoDB Compass)');
+    } catch (error) {
+        console.error('Error inserting document:', error);
+        res.status(500).send('Error inserting document.');
+    }
+});
+//   Document inserted (check for warnings in MongoDB Compass)
